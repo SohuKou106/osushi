@@ -7,7 +7,7 @@ phina.define('Stage', {
 
     superClass: 'RectangleShape',
 
-    init: function(options){
+    init(options){
         const defaults = {
             width: 64,
             height: 64,

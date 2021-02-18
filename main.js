@@ -1,3 +1,6 @@
+//テスト動作開始
+//browser-sync start --server --files *
+
 var rectWidth = 100;
 var rectHeight = 60;
 var moveState = 0;  //0:left 1:up 2:right 3:down
@@ -7,9 +10,11 @@ var WINDOW_HEIGHT = 960;
 var BLOCK_WIDTH = 40 * 2;
 var BLOCK_HEIGHT = 60 / 2;
 
+//githubで公開したレポジトリは自動的にjsdelivrで配布?される
+//ので，ユーザー名とレポジトリ名を適切に指定すれば画像が参照できる！
 var mainImg = {
     image : {
-        'ika' : 'file:///Users/hirano/Desktop/phina/images/ika.png'
+        'ika' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/ika.png'
     },
 };
 
@@ -36,6 +41,16 @@ phina.define('MainScene', {
         this.stages = stages;
         var e_stages = [];
         this.e_stages = e_stages;
+
+        const player = new Player({
+            //image: 'ika',
+            x: 484,
+            y: 280,
+            width: 40,
+            height: 40,
+        });
+        player.addChildTo(this);
+        this.player = player;
 
         var stage = new Stage({
             width: 64,
@@ -112,6 +127,10 @@ phina.define('MainScene', {
             this.e_stage = e_stage
             this.e_stages.push(this.e_stage)
         }*/
+
+        if(keyboard.getKey('left')){
+
+        }
     }
 });
 
