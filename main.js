@@ -14,7 +14,7 @@ var BLOCK_HEIGHT = 60 / 2;
 //ので，ユーザー名とレポジトリ名を適切に指定すれば画像が参照できる！
 var mainImg = {
     image : {
-        'ika' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/ika.png'
+        'ika' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/ika_pink.png'
     },
 };
 
@@ -43,11 +43,11 @@ phina.define('MainScene', {
         this.e_stages = e_stages;
 
         const player = new Player({
-            //image: 'ika',
-            x: 484,
-            y: 280,
+            image: 'ika',
             width: 40,
             height: 40,
+            x: 484,
+            y: 280,
         });
         player.addChildTo(this);
         this.player = player;
