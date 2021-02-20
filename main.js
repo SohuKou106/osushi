@@ -3,7 +3,6 @@
 
 var rectWidth = 100;
 var rectHeight = 60;
-var moveState = 0;  //0:left 1:up 2:right 3:down
 var SPEED = 4;
 var WINDOW_WIDTH = 640;
 var WINDOW_HEIGHT = 960;
