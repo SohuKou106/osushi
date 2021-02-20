@@ -13,16 +13,23 @@ phina.define('Player', {
             image: "",
             width: 40,
             height: 40,
+            x: 480, 
+            y: 280,
         };
 
         //this.superInit(opt);
+        const opt = Object.assign(defaults, options)
         this.superInit('ika');
+        this.x = opt.x;
+        this.y = opt.y;
         //optionsの引数をdefaultsに割り当てる？
-        //const opt = Object.assign(defaults, options)
+        
         //this.superInit(opt);
     },
 
-    moveLeft(){
-        console.log("left!")
-    }
+    move(x, y){
+        this.x = x;
+        this.y = y;
+        //console.log("left!")
+    },
 });

@@ -1,0 +1,3 @@
+phina.define('Shot', {
+    
+})

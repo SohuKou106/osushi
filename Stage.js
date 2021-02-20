@@ -18,6 +18,8 @@ phina.define('Stage', {
 
             boundaryLeft: 40,
             boundaryTop: 680,
+
+            stageID: 0, //皿の種類（0: プレーン, 1: )
         };
 
         const opt = Object.assign(defaults, options)
@@ -33,11 +35,30 @@ phina.define('Stage', {
         this.moveState = opt.moveState;
 
         //形状の設定
-        var r = Math.floor(Math.random() * 255)
-        var g = Math.floor(Math.random() * 255)
-        var b = Math.floor(Math.random() * 255)
-        this.fill = 'rgba(' + r.toString() + ',' + g.toString() + ',' + b.toString() + ', 1)';
-        this.stroke = "rgba(255, 255, 255, 1)";
+        //var r = Math.floor(Math.random() * 255)
+        //var g = Math.floor(Math.random() * 255)
+        //var b = Math.floor(Math.random() * 255)
+        //this.fill = 'rgba(' + r.toString() + ',' + g.toString() + ',' + b.toString() + ', 1)';
+        
+        var stageType = Math.floor(Math.random() * 100)
+
+        if(stageType < 70){
+            this.fill = 'white';
+            this.stroke = 'yellow';
+        }
+        else if(stageType >= 70 && stageType < 80){
+            this.fill = 'red';
+            this.stroke = 'white';
+        }
+        else if(stageType >= 80 && stageType < 90){
+            this.fill = 'green';
+            this.stroke = 'white';
+        }
+        else {
+            this.fill = 'blue';
+            this.stroke = 'white';
+        }
+
         this.strokeWidth = 10;
     },
 
@@ -68,8 +89,9 @@ phina.define('Stage', {
         }
     },
 
+    //次を追加
     next(){
-        if(this.right <= WINDOW_WIDTH){
+        if(this.right <  WINDOW_WIDTH){
             return true;
         }
         else{
