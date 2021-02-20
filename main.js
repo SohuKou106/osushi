@@ -15,7 +15,7 @@ var mainImg = {
     image : {
         'ika' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/ika_pink.png',
         'background' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/background.png',
-        'lane' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/lane.png',
+        'lane' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/lane_gray.png',
     },
 };
 
