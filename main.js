@@ -14,7 +14,9 @@ var BLOCK_HEIGHT = 60 / 2;
 //ので，ユーザー名とレポジトリ名を適切に指定すれば画像が参照できる！
 var mainImg = {
     image : {
-        'background' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/background.png'
+        'ika' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/ika_pink.png',
+        'background' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/background.png',
+        'lane' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/lane.png',
     },
 };
 
@@ -24,9 +26,11 @@ phina.define('MainScene', {
 
     init: function() {
         this.superInit();
-        // 背景を設定
-        new Sprite('background').addChildTo(this);
-        this.backgroundColor = '#444';
+
+        // 背景色を指定
+        new Sprite('background').addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
+        new Sprite('lane').addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
+        //this.backgroundColor = '#444';
         // ラベルを生成
         this.label = Label('SUSHI-CHAN').addChildTo(this);
         this.label.x = this.gridX.center(-4); // x 座標
@@ -38,6 +42,7 @@ phina.define('MainScene', {
         // 弾グループ
         this.shotGroup = DisplayElement().addChildTo(this);
         var self = this;
+
 
         const player = new Player({
             image: 'ika',
