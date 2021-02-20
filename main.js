@@ -147,7 +147,6 @@ phina.define('MainScene', {
 
         player.move(this.blockGroup.children[this.playerNum].x, this.blockGroup.children[this.playerNum].y)
 
-        console.log("Num: " + this.playerNum + "  len: " + this.blockGroup.children.length)
         //次の皿へ
         if(keyboard.getKeyDown('left')){
             if(player.y <= 800){
