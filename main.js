@@ -12,15 +12,20 @@ phina.main(function() {
     scenes: [
         //タイトル
         {
-            label: 'title',
-            className: 'TitleScene',
+          label: 'title',
+          className: 'TitleScene',
         },
-
+        //ステージセレクト
+        {
+          label: 'select',
+          className: 'StageSelect',
+          nextLabel: 'game',
+        },
         //メイン
         {
-            label: 'game',
-            className: 'GameScene',
-            nextLabel: 'title',
+          label: 'game',
+          className: 'GameScene',
+          nextLabel: 'title',
         }
     ]
   });

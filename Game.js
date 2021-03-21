@@ -5,6 +5,8 @@ var BLOCK_WIDTH = 40 * 2;
 var BLOCK_HEIGHT = 60 / 2;
 var MOVE_FRAME = 6;
 const COUNTDOWN = 60;
+const HPBAR_WIDTH = 20;
+const HPBAR_HEIGHT = 200;
 
 //githubで公開したレポジトリは自動的にjsdelivrで配布?される
 //ので，ユーザー名とレポジトリ名を適切に指定すれば画像が参照できる！
@@ -14,6 +16,8 @@ var mainImg = {
         'background' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/background.png',
         'lane' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/lane_gray.png',
         'steak' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/steak.png',
+        'pasta' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/pasta.png',
+        'pizza' : 'https://cdn.jsdelivr.net/gh/SohuKou106/osushi/images/pizza.png',
     },
 };
 
@@ -23,11 +27,12 @@ phina.define('GameScene', {
 
     freezeFlame : 0,    //被弾時の硬直
     movingFrame : 0,    //左右に移動している最中の操作非受付時間
+    playerNum : 0,      //自機が何番目のお皿にいるか
     beginFrame : 0,     //ゲーム開始時のフレーム
     playing : false,    //自機が操作可能な状態か（カウントダウン，ゲームオーバーなどでないか）
 
     init: function() {
-        this.superInit();
+        this.superInit(param);
 
         // 背景色を指定
         new Sprite('background').addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
@@ -51,48 +56,47 @@ phina.define('GameScene', {
         player.addChildTo(this);
         this.player = player;
 
-        var playerNum = 0;
-        this.playerNum = playerNum;
-
-        //体力バー（下地）
-        new RectangleShape({
-            width: 30,
-            height: 300,
-            x: WINDOW_WIDTH - 40,
-            y: this.gridY.center(),
-            fill: 'gray',
-        }).addChildTo(this);
-
         //体力バー
         const hpBar = new HPBar({
-            width: 30,
-            height: 300,
             x: WINDOW_WIDTH - 40,
-            y: this.gridY.center(),
+            y: this.gridY.center(-1),
+            color : 'lightgreen',
+            maxHP : 100,
         }).addChildTo(this);
         this.hpBar = hpBar;
 
-        //体力バー（枠）
-        new RectangleShape({
-            width: 30,
-            height: 300,
-            x: WINDOW_WIDTH - 40,
-            y: this.gridY.center(),
-            fill: 'transparent',
-            stroke: 'white',
-            strokeWidth: 5,
-        }).addChildTo(this);
+        var boss_image = 'steak'
+        switch(param.stageNum){
+            case 1: 
+                boss_image = 'steak'
+                break;
+            case 2: 
+                boss_image = 'pasta'
+                break;
+            case 3: 
+                boss_image = 'pizza'
+                break;
 
+        }
         //敵機
         const e_steak = new Enemy({
-            image: 'steak',
-            width: 528,
-            height: 352,
+            image: boss_image,
+            width: 528 * 0.8,
+            height: 352 * 0.8,
             x: this.gridX.center(),
-            y: this.gridY.center(-2),
+            y: this.gridY.center(-5),
         });
         e_steak.addChildTo(this);
         this.e_steak = e_steak;
+
+        //敵の体力バー
+        const e_hpBar = new HPBar({
+            x: WINDOW_WIDTH - 20,
+            y: this.gridY.center(-1),
+            color : 'red',
+            maxHP : 1000,
+        }).addChildTo(this);
+        this.e_hpBar = e_hpBar;
 
         //ステージ
         var stage = new Stage({
@@ -108,28 +112,27 @@ phina.define('GameScene', {
         }).addChildTo(self.blockGroup);
         this.stage = stage
 
-        //
-
-        //ゲームオーバーメッセージ
-        var gameOverLabel = new Label({
-            text: 'GAME OVER',
+        //メッセージラベル
+        var centerLabel = new Label({
+            text: '',
             x : this.gridX.center(),
             y : this.gridY.center(),
             fontSize : 64,
             fill : 'white',
         }).addChildTo(this);
-        this.gameOverLabel = gameOverLabel
-        gameOverLabel.hide()
+        this.centerLabel = centerLabel
+        centerLabel.hide()
 
-        var gameOverLabel2 = new Label({
+        //サブメッセージラベル
+        var centerLabel2 = new Label({
             text: 'Press Return Key',
             x : this.gridX.center(),
-            y : this.gridY.center(2),
+            y : this.gridY.center(1),
             fontSize : 32,
             fill : 'white',
         }).addChildTo(this);
-        this.gameOverLabel2 = gameOverLabel2
-        gameOverLabel2.hide()
+        this.centerLabel2 = centerLabel2
+        centerLabel2.hide()
         
         /*var e_stage = new EnemyStage({
             width: 64,
@@ -147,13 +150,12 @@ phina.define('GameScene', {
     update({keyboard, frame,}) 
     {
         var {
-            stage,
-            e_stage,
             player,
             hpBar,
-            playerNum,
-            gameOverLabel,
-            gameOverLabel2,
+            centerLabel,
+            centerLabel2,
+            stage,
+            e_stage,
 
             //グループ
             blockGroup,
@@ -165,19 +167,21 @@ phina.define('GameScene', {
         //**************************************
         if(this.beginFrame <= 0) {
             this.beginFrame = frame;
-            this.gameOverLabel.text = 'Ready...';
-            this.gameOverLabel.show();
+            this.centerLabel.text = 'Ready...';
+            this.centerLabel.show();
         }
 
         if(!this.playing){
-            this.gameOverLabel.fill = 'rgba(255,' + ((COUNTDOWN - (frame - this.beginFrame))/ COUNTDOWN * 255).toString() + ',' + ((COUNTDOWN - (frame - this.beginFrame))/ COUNTDOWN * 255).toString() +',1)'
+            this.centerLabel.fill = 'rgba(255,' + ((COUNTDOWN - (frame - this.beginFrame))/ COUNTDOWN * 255).toString() + ',' + ((COUNTDOWN - (frame - this.beginFrame))/ COUNTDOWN * 255).toString() +',1)'
             if(frame >= this.beginFrame + COUNTDOWN){
-                this.gameOverLabel.hide();
+                this.centerLabel.hide();
                 this.playing = true;
             }
         }
 
-
+        //**************************************
+        //ゲーム中処理
+        //**************************************
         if(stage.next()){
             var stage = new Stage({
                 width: 64,
@@ -200,7 +204,8 @@ phina.define('GameScene', {
                 if(this.blockGroup.children.last.x <= 600) this.playerNum = this.blockGroup.children.length - 1;
                 else this.playerNum = this.blockGroup.children.length - 2;
                 player.move(this.blockGroup.children[this.playerNum].x, this.blockGroup.children[this.playerNum].y)
-                player.setHP(player.getHP() - 30);
+                this.player.setHP(this.player.getHP() - 50)
+                this.hpBar.setHP(this.player.HP);
                 this.freezeFlame = 25;
             }
 
@@ -210,8 +215,6 @@ phina.define('GameScene', {
                 this.blockGroup.children.first.remove();
             }
         }
-
-        this.hpBar.setHP(this.player.HP);
         
         //硬直状態なら硬直時間を減らす
         if(this.freezeFlame > 0) {
@@ -252,6 +255,31 @@ phina.define('GameScene', {
             }
         }
 
+        //皿の位置によってイベント発生
+        if(!this.player.gameOver && this.playing && this.blockGroup.children[this.playerNum].stageID > 0){
+            switch(this.blockGroup.children[this.playerNum].stageID){
+                case 1:
+                    console.log("red!");
+                    break;
+                case 2:
+                    this.player.setHP(this.player.getHP() + 20)
+                    this.hpBar.setHP(this.player.HP);
+                    break;
+                case 3:
+                    console.log("blue!");
+                    break;
+                default:
+                    break;
+            
+            }
+            this.blockGroup.children[this.playerNum].fill = 'white'
+            this.blockGroup.children[this.playerNum].stroke = 'yellow'
+            this.blockGroup.children[this.playerNum].stageID = 0
+        }
+
+        //**************************************
+        //弾に関する処理
+        //**************************************
         //弾を発射
         if(keyboard.getKey('space') && this.freezeFlame <= 0 && !this.player.gameOver && this.playing){
             new Shot({
@@ -270,10 +298,30 @@ phina.define('GameScene', {
             }
         });
 
+        this.hitTestShotToEnemy();
+
         //デバッグ用　自滅
         if(keyboard.getKey('7') && !this.player.gameOver && this.playing){
             this.player.setHP(0)
             this.hpBar.setHP(this.player.HP);
+        }
+
+        //**************************************
+        //ゲームクリア処理
+        //**************************************
+        if(this.e_steak.HP <= 0 && !this.e_steak.endFlag){
+            this.e_steak.gameOverMove();
+        }
+
+        if(this.e_steak.endFlag){
+            this.e_steak.remove()
+            this.centerLabel.text = 'GAME CLEAR!!!'
+            this.centerLabel.fill = 'white'
+            this.centerLabel.show();
+            this.centerLabel2.show();
+            if(keyboard.getKeyUp('return')){
+                this.exit();
+            }
         }
         
         //**************************************
@@ -284,10 +332,10 @@ phina.define('GameScene', {
         }
 
         if(this.player.endFlag){
-            this.gameOverLabel.text = 'GAME OVER'
-            this.gameOverLabel.fill = 'white'
-            this.gameOverLabel.show();
-            this.gameOverLabel2.show();
+            this.centerLabel.text = 'GAME OVER'
+            this.centerLabel.fill = 'white'
+            this.centerLabel.show();
+            this.centerLabel2.show();
             if(keyboard.getKeyUp('return')){
                 this.exit();
             }
@@ -299,5 +347,19 @@ phina.define('GameScene', {
         if(this.freezeFlame < 0 && !this.player.gameOver && this.playing){
 
         }
+    },
+
+    hitTestShotToEnemy(){
+        var self = this;
+        self.shotGroup.children.each(function(shot){
+            var r1 = shot.collider.getAbsoluteRect();
+            var r2 = self.e_steak.collider.getAbsoluteRect();
+
+            if(Collision.testRectRect(r1, r2)){
+                self.e_steak.setHP(self.e_steak.getHP() - 200);
+                self.e_hpBar.setHP(self.e_steak.getHP());
+                shot.remove();
+            }
+        });
     }
 });

@@ -17,5 +17,10 @@ phina.define('Shot', {
         this.strokeWidth = 2;
 
         this.physical.velocity.y = opt.velocityY;
+
+        this.collider = Collider({
+            width: this.radius - 1,
+            height: this.radius - 1,
+        }).addChildTo(this)
     },
 })

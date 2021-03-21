@@ -45,18 +45,22 @@ phina.define('Stage', {
         if(stageType < 70){
             this.fill = 'white';
             this.stroke = 'yellow';
+            this.stageID = 0;
         }
         else if(stageType >= 70 && stageType < 80){
             this.fill = 'red';
             this.stroke = 'white';
+            this.stageID = 1;
         }
         else if(stageType >= 80 && stageType < 90){
             this.fill = 'green';
             this.stroke = 'white';
+            this.stageID = 2;
         }
         else {
             this.fill = 'blue';
             this.stroke = 'white';
+            this.stageID = 3;
         }
 
         this.strokeWidth = 10;

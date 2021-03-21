@@ -22,12 +22,18 @@ phina.define('Player', {
             startFrame: 0,
         };
 
-        const opt = Object.assign(defaults, options)
+        const opt = Object.assign(defaults, options);    //optionsの引数をdefaultsに割り当てる？
         this.superInit(opt.image);
         this.x = opt.x;
         this.y = opt.y;
+        this.width = opt.width;
+        this.height = opt.height;
         this.HP = opt.HP;
-        //optionsの引数をdefaultsに割り当てる？
+
+        this.collider = Collider({
+            width: this.width - 10, 
+            height: this.height - 10,
+        }).addChildTo(this);
     },
 
     update(){
@@ -71,8 +77,9 @@ phina.define('Player', {
     //HP関連の処理
     //**************************************
     setHP(value){
-        if(value > 0) this.HP = value;
-        else this.HP = 0;
+        if(value <= 0) this.HP = 0;
+        else if (value >= 100) this.HP = 100;
+        else this.HP = value;
     },
 
     getHP(){
